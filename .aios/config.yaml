@@ -1,0 +1,6 @@
+version: 1.0.0
+project_type: web-app
+framework: nextjs
+description: "Autopiloto LOPDP"
+agents:
+  default_mode: auto

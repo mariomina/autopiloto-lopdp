@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 🏢 Capa Corporativa (Tenants)
+model Tenant {
+  id             String      @id @default(uuid())
+  ruc            String      @unique
+  razonSocial    String
+  sector         String
+  portalName     String
+  primaryColor   String      @default("#1152d4")
+  logoUrl        String?
+  biometricsOn   Boolean     @default(false)
+  signatureOn    Boolean     @default(false)
+  arcoOn         Boolean     @default(false)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  
+  staff          StaffUser[]
+  identities     DigitalIdentity[]
+  auditLogs      AuditChain[]
+}
+
+model StaffUser {
+  id        String   @id @default(uuid())
+  tenantId  String
+  email     String   @unique
+  role      String   @default("ADMIN") // OWNER, ADMIN, AUDITOR
+  createdAt DateTime @default(now())
+
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+}
+
+// 👥 Capa de Identidad Digital
+model DigitalIdentity {
+  id             String   @id @default(uuid())
+  tenantId       String
+  fullName       String
+  idNumber       String
+  biometricToken String?  // Representación cifrada del perfil
+  createdAt      DateTime @default(now())
+
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  consentEvents  ConsentEvent[]
+  contracts      SignatureContract[]
+  arcoRequests   ArcoRequest[]
+}
+
+model ConsentEvent {
+  id         String   @id @default(uuid())
+  identityId String
+  purpose    String
+  status     String   // ACCEPTED, REVOKED
+  ipAddress  String?
+  timestamp  DateTime @default(now())
+
+  identity   DigitalIdentity @relation(fields: [identityId], references: [id])
+}
+
+// 🔐 Capa de Módulos Operativos
+model SignatureContract {
+  id         String   @id @default(uuid())
+  identityId String
+  fileUrl    String
+  status     String   @default("SIGNED")
+  createdAt  DateTime @default(now())
+
+  identity   DigitalIdentity @relation(fields: [identityId], references: [id])
+}
+
+model ArcoRequest {
+  id         String   @id @default(uuid())
+  identityId String
+  type       String   // ACCESO, RECTIFICACION, etc.
+  status     String   @default("PENDING")
+  createdAt  DateTime @default(now())
+
+  identity   DigitalIdentity @relation(fields: [identityId], references: [id])
+}
+
+// 📜 Capa de Integridad (Immutable logs)
+model AuditChain {
+  id           String   @id @default(uuid())
+  tenantId     String
+  eventType    String
+  payloadHash  String
+  prevHash     String?
+  combinedHash String
+  timestamp    DateTime @default(now())
+
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+}

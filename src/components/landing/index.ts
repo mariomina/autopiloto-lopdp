@@ -1,0 +1,10 @@
+// Barrel export for landing components
+export { HeroSection } from './HeroSection';
+export { ValuePropositionSection } from './ValuePropositionSection';
+export { BenefitsSection } from './BenefitsSection';
+export { RoiCalculatorSection } from './RoiCalculatorSection';
+export { HowItWorksSection } from './HowItWorksSection';
+export { ComparisonTableSection } from './ComparisonTableSection';
+export { TestimonialsSection } from './TestimonialsSection';
+export { CtaSection } from './CtaSection';
+export { Footer } from './Footer';
