@@ -1,4 +1,4 @@
-# Autopiloto LOPDP - ENEXT Compliance Orchestrator
+# Autopiloto LOPDP - Compliance Orchestrator
 
 Plataforma de orquestación para el cumplimiento de la Ley Orgánica de Protección de Datos Personales (LOPDP) en Ecuador. Permite la gestión centralizada de consentimientos, derechos ARCO, auditorías de seguridad y certificación automática.
 
