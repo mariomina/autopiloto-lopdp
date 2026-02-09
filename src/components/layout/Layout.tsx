@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ViewState } from '@/types';
 import { SettingsView } from '@/components/shared';
 import { HelpGuide } from './HelpGuide';
+import { NavItem } from './NavItem';
 import {
   LayoutDashboard,
   FileClock,
@@ -31,25 +32,10 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children, currentView, setView, toggleTheme, isDark }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const NavItem = ({ view, icon: Icon, label }: { view: ViewState; icon: React.ElementType; label: string }) => {
-    const isActive = currentView === view;
-    return (
-      <button
-        onClick={() => {
-          setView(view);
-          setIsMobileMenuOpen(false);
-        }}
-        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group relative
-          ${isActive
-            ? 'bg-brand/10 text-brand'
-            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
-          }`}
-      >
-        {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-brand rounded-r-full"></div>}
-        <Icon size={20} className={isActive ? 'text-brand' : 'text-slate-500 dark:text-slate-400 group-hover:text-brand transition-colors'} />
-        <span className={`font-medium ${isActive ? 'font-bold' : ''}`}>{label}</span>
-      </button>
-    );
+  // Handler for navigation that also closes mobile menu
+  const handleNavigate = (view: ViewState) => {
+    setView(view);
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -65,27 +51,27 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, setView, 
 
         <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
           {/* 1. Dashboard */}
-          <NavItem view={ViewState.DASHBOARD_HOME} icon={LayoutDashboard} label="Dashboard" />
+          <NavItem view={ViewState.DASHBOARD_HOME} icon={LayoutDashboard} label="Dashboard" currentView={currentView} onNavigate={handleNavigate} />
 
           {/* 2. Registro de Actividad (RAT) */}
-          <NavItem view={ViewState.DASHBOARD_RAT} icon={FileClock} label="Registro de Actividad (RAT)" />
+          <NavItem view={ViewState.DASHBOARD_RAT} icon={FileClock} label="Registro de Actividad (RAT)" currentView={currentView} onNavigate={handleNavigate} />
 
           {/* 3. Centro de Identidad & Fraude */}
-          <NavItem view={ViewState.DASHBOARD_BIOMETRICS} icon={ScanFace} label="Identidad & Fraude" />
+          <NavItem view={ViewState.DASHBOARD_BIOMETRICS} icon={ScanFace} label="Identidad & Fraude" currentView={currentView} onNavigate={handleNavigate} />
 
           {/* 4. Gestión ARCO */}
-          <NavItem view={ViewState.DASHBOARD_ARCO} icon={Scale} label="Gestión de Derechos ARCO" />
+          <NavItem view={ViewState.DASHBOARD_ARCO} icon={Scale} label="Gestión de Derechos ARCO" currentView={currentView} onNavigate={handleNavigate} />
 
           {/* 5. Firma Electrónica */}
-          <NavItem view={ViewState.DASHBOARD_SIGNATURE} icon={PenTool} label="Firma & Contratos" />
+          <NavItem view={ViewState.DASHBOARD_SIGNATURE} icon={PenTool} label="Firma & Contratos" currentView={currentView} onNavigate={handleNavigate} />
 
           {/* 6. Reportes */}
-          <NavItem view={ViewState.DASHBOARD_REPORTS} icon={FileBadge} label="Reportes & Certificados" />
+          <NavItem view={ViewState.DASHBOARD_REPORTS} icon={FileBadge} label="Reportes & Certificados" currentView={currentView} onNavigate={handleNavigate} />
 
           <div className="pt-8 pb-2">
             <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Sistema</p>
           </div>
-          <NavItem view={ViewState.DASHBOARD_SETTINGS} icon={Settings} label="Ajustes" />
+          <NavItem view={ViewState.DASHBOARD_SETTINGS} icon={Settings} label="Ajustes" currentView={currentView} onNavigate={handleNavigate} />
         </nav>
 
         <div className="p-4 border-t border-slate-200 dark:border-white/10">
@@ -152,13 +138,13 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, setView, 
               </button>
             </div>
             <nav className="flex-1 px-4 space-y-2">
-              <NavItem view={ViewState.DASHBOARD_HOME} icon={LayoutDashboard} label="Dashboard" />
-              <NavItem view={ViewState.DASHBOARD_RAT} icon={FileClock} label="RAT" />
-              <NavItem view={ViewState.DASHBOARD_BIOMETRICS} icon={ScanFace} label="Biometría" />
-              <NavItem view={ViewState.DASHBOARD_ARCO} icon={Scale} label="ARCO" />
-              <NavItem view={ViewState.DASHBOARD_SIGNATURE} icon={PenTool} label="Firmas" />
-              <NavItem view={ViewState.DASHBOARD_REPORTS} icon={FileBadge} label="Reportes" />
-              <NavItem view={ViewState.DASHBOARD_SETTINGS} icon={Settings} label="Ajustes" />
+              <NavItem view={ViewState.DASHBOARD_HOME} icon={LayoutDashboard} label="Dashboard" currentView={currentView} onNavigate={handleNavigate} />
+              <NavItem view={ViewState.DASHBOARD_RAT} icon={FileClock} label="RAT" currentView={currentView} onNavigate={handleNavigate} />
+              <NavItem view={ViewState.DASHBOARD_BIOMETRICS} icon={ScanFace} label="Biometría" currentView={currentView} onNavigate={handleNavigate} />
+              <NavItem view={ViewState.DASHBOARD_ARCO} icon={Scale} label="ARCO" currentView={currentView} onNavigate={handleNavigate} />
+              <NavItem view={ViewState.DASHBOARD_SIGNATURE} icon={PenTool} label="Firmas" currentView={currentView} onNavigate={handleNavigate} />
+              <NavItem view={ViewState.DASHBOARD_REPORTS} icon={FileBadge} label="Reportes" currentView={currentView} onNavigate={handleNavigate} />
+              <NavItem view={ViewState.DASHBOARD_SETTINGS} icon={Settings} label="Ajustes" currentView={currentView} onNavigate={handleNavigate} />
             </nav>
           </div>
         </div>
