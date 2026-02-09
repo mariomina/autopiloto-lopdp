@@ -27,11 +27,12 @@ Basado en la auditoría QA del 2026-02-09 que identificó 34 errores de ESLint, 
 - [x] Verificar que todos los tests pasan (25/25 ✅)
 
 ### 5.0.3: Implementar Validación de Datos
-- [ ] Instalar Zod: `npm install zod`
-- [ ] Crear `src/lib/validations/schemas.ts`
-- [ ] Definir `RegisterTenantSchema` (RUC, email, razón social)
-- [ ] Definir `CreateIdentitySchema`
-- [ ] Definir `ArcoRequestSchema`
+- [x] Instalar Zod: `npm install zod`
+- [x] Crear schemas de validación en `src/lib/validations/schemas.ts`
+- [x] Actualizar endpoint `/api/register` con validación Zod
+- [x] Crear tests para schemas de validación (40 tests)
+- [x] Documentar schemas y tipos exportados
+- [x] Verificar que todos los tests pasan (65/65 ✅)`
 - [ ] Actualizar `src/app/api/register/route.ts` con validación
 - [ ] Agregar tests para validaciones
 
