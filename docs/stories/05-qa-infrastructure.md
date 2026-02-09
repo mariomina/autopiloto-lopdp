@@ -37,36 +37,36 @@ Basado en la auditoría QA del 2026-02-09 que identificó 34 errores de ESLint, 
 - [ ] Agregar tests para validaciones
 
 ### 5.0.4: Implementar APIs Faltantes
-- [ ] Crear `src/app/api/dashboard/stats/route.ts`
+- [x] Crear `src/app/api/dashboard/stats/route.ts`
   - Endpoint: `GET /api/dashboard/stats`
   - Retorna: compliance score, ARCO count, identities count, biometrics status
-- [ ] Completar `src/app/api/audit/route.ts`
+- [x] Completar `src/app/api/audit/route.ts`
   - Endpoint: `GET /api/audit` (con paginación y filtros)
   - Endpoint: `POST /api/audit` (crear evento de auditoría)
-- [ ] Crear `src/app/api/arco/route.ts`
+- [x] Crear `src/app/api/arco/route.ts`
   - Endpoint: `GET /api/arco` (listar solicitudes)
   - Endpoint: `POST /api/arco` (crear solicitud)
   - Endpoint: `PATCH /api/arco/[id]` (actualizar estado)
-- [ ] Actualizar componentes para consumir APIs reales
-- [ ] Agregar loading states y error handling
-- [ ] Tests de integración para todos los endpoints
+- [x] Actualizar componentes para consumir APIs reales
+- [x] Agregar loading states y error handling
+- [x] Tests de integración para todos los endpoints
 
 ### 5.0.5: Verificación de Cadena de Hashing
-- [ ] Crear `src/lib/crypto/hashChain.ts`
-- [ ] Implementar función `verifyChainIntegrity(events: AuditEvent[]): boolean`
-- [ ] Implementar función `calculateCombinedHash(payload: string, prevHash: string): string`
-- [ ] Actualizar `CustodyView.tsx` con verificación visual
-- [ ] Implementar endpoint `GET /api/audit/verify`
-- [ ] Tests unitarios para funciones de hashing
-- [ ] Documentar algoritmo de hashing en `docs/architecture/hashing-chain.md`
+- [x] Crear `src/lib/crypto/hashChain.ts`
+- [x] Implementar función `verifyChainIntegrity(events: AuditEvent[]): boolean`
+- [x] Implementar función `calculateCombinedHash(payload: string, prevHash: string): string`
+- [x] Actualizar `CustodyView.tsx` con verificación visual
+- [x] Implementar endpoint `GET /api/audit/verify`
+- [x] Tests unitarios para funciones de hashing
+- [x] Documentar algoritmo de hashing en `docs/architecture/hashing-chain.md`
 
 ### 5.0.6: Exportación de Reportes de Evidencia
-- [ ] Crear `src/lib/export/csvGenerator.ts`
-- [ ] Implementar endpoint `GET /api/audit/export?format=csv`
-- [ ] Agregar botón "Exportar Evidencias" en `CustodyView.tsx`
-- [ ] Implementar descarga de archivo CSV con hash de integridad
-- [ ] Agregar opción de exportar en formato PDF (opcional)
-- [ ] Tests para generación de reportes
+- [x] Crear `src/lib/export/csvGenerator.ts`
+- [x] Implementar endpoint `GET /api/audit/export?format=csv`
+- [x] Agregar botón "Exportar Evidencias" en `CustodyView.tsx`
+- [x] Implementar descarga de archivo CSV con hash de integridad
+- [x] Agregar opción de exportar en formato PDF (opcional)
+- [x] Tests para generación de reportes
 
 ## Criterios de Aceptación
 
