@@ -16,12 +16,15 @@ Basado en la auditoría QA del 2026-02-09 que identificó 34 errores de ESLint, 
 - [x] Ejecutar `npm run typecheck` y verificar 0 errores
 
 ### 5.0.2: Configurar Infraestructura de Testing
-- [ ] Instalar dependencias de testing (vitest, @testing-library/react)
-- [ ] Crear `vitest.config.ts` con configuración base
-- [ ] Crear estructura de carpetas `src/__tests__/{unit,integration,setup.ts}`
-- [ ] Escribir primer test: `src/__tests__/unit/Layout.test.tsx`
-- [ ] Actualizar `package.json` con scripts de testing
-- [ ] Documentar convenciones de testing en `docs/guides/testing.md`
+- [x] Instalar dependencias de testing (vitest, @testing-library/react)
+- [x] Crear `vitest.config.ts` con configuración base
+- [x] Crear estructura de carpetas `src/__tests__/{unit,integration,setup.ts}`
+- [x] Escribir primer test: `src/__tests__/unit/Layout.test.tsx`
+- [x] Actualizar `package.json` con scripts de testing
+- [x] Documentar convenciones de testing en `docs/guides/testing.md`
+- [x] Escribir tests para NavItem (11 tests pasando)
+- [x] Escribir tests para Layout (14 tests pasando)
+- [x] Verificar que todos los tests pasan (25/25 ✅)
 
 ### 5.0.3: Implementar Validación de Datos
 - [ ] Instalar Zod: `npm install zod`
