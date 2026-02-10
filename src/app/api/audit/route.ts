@@ -98,7 +98,8 @@ export async function GET(req: Request) {
                     timestamp: new Date(Date.now() - 3600000).toISOString(),
                     payload: { identityId: 'identity-1', purpose: 'Marketing' },
                     payloadHash: 'SHA256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069',
-                    previousHash: null,
+                    combinedHash: 'SHA256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069',
+                    prevHash: null,
                     metadata: {}
                 },
                 {
@@ -108,7 +109,8 @@ export async function GET(req: Request) {
                     timestamp: new Date(Date.now() - 7200000).toISOString(),
                     payload: { arcoRequestId: 'arco-1', type: 'ACCESO' },
                     payloadHash: 'SHA256:a92b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b',
-                    previousHash: 'SHA256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069',
+                    prevHash: 'SHA256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069',
+                    combinedHash: 'SHA256:combined-mock-hash-12345',
                     metadata: {}
                 }
             ];
@@ -170,11 +172,17 @@ export async function POST(req: Request) {
             const lastEvent = await prisma.auditChain.findFirst({
                 where: { tenantId: data.tenantId },
                 orderBy: { timestamp: 'desc' },
-                select: { payloadHash: true }
             });
+
+            const prevHash = lastEvent?.combinedHash || 'GENESIS';
 
             // Calcular hash del payload
             const payloadHash = calculateHash(data.payload);
+
+            // Calcular hash combinado (Chain Integrity)
+            // CombinedHash = Hash(PayloadHash + PrevCombinedHash)
+            const combinedString = `${payloadHash}|${prevHash}`;
+            const combinedHash = `SHA256:${require('crypto').createHash('sha256').update(combinedString).digest('hex')}`;
 
             // Crear evento de auditoría
             const auditEvent = await prisma.auditChain.create({
@@ -182,10 +190,11 @@ export async function POST(req: Request) {
                     tenantId: data.tenantId,
                     eventType: data.eventType,
                     timestamp: new Date(),
-                    payload: data.payload,
+                    payload: data.payload as any,
                     payloadHash,
-                    previousHash: lastEvent?.payloadHash || null,
-                    metadata: data.metadata || {},
+                    combinedHash,
+                    prevHash, // Store the pointer to previous
+                    metadata: (data.metadata || {}) as any,
                 }
             });
 
@@ -210,7 +219,8 @@ export async function POST(req: Request) {
                     timestamp: new Date().toISOString(),
                     payload: data.payload,
                     payloadHash,
-                    previousHash: null,
+                    combinedHash: payloadHash as string,
+                    prevHash: null,
                     metadata: data.metadata || {},
                 },
                 message: 'Evento de auditoría registrado exitosamente (modo simulación)',

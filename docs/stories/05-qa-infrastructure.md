@@ -1,5 +1,7 @@
 # Story 5.0: Quality Assurance & Testing Infrastructure
 
+**Estado:** ✅ COMPLETADO
+
 ## Descripción
 Establecer infraestructura de testing, resolver errores críticos de lint y preparar el proyecto para producción siguiendo estándares de calidad AIOS.
 
@@ -33,8 +35,8 @@ Basado en la auditoría QA del 2026-02-09 que identificó 34 errores de ESLint, 
 - [x] Crear tests para schemas de validación (40 tests)
 - [x] Documentar schemas y tipos exportados
 - [x] Verificar que todos los tests pasan (65/65 ✅)`
-- [ ] Actualizar `src/app/api/register/route.ts` con validación
-- [ ] Agregar tests para validaciones
+- [x] Actualizar `src/app/api/register/route.ts` con validación
+- [x] Agregar tests para validaciones
 
 ### 5.0.4: Implementar APIs Faltantes
 - [x] Crear `src/app/api/dashboard/stats/route.ts`
@@ -136,16 +138,16 @@ Basado en la auditoría QA del 2026-02-09 que identificó 34 errores de ESLint, 
 
 ## Definición de Hecho (Definition of Done)
 
-- [ ] Todos los checkboxes de tareas marcados como completados
-- [ ] `npm run lint` ejecuta sin errores ni warnings críticos
-- [ ] `npm run typecheck` ejecuta sin errores
-- [ ] `npm test` ejecuta con todos los tests pasando
-- [ ] `npm run build` genera build exitoso
-- [ ] Cobertura de tests > 60%
-- [ ] Code review completado y aprobado
-- [ ] Documentación actualizada (README, guides)
-- [ ] Todos los archivos listados creados/modificados
-- [ ] Commit siguiendo conventional commits: `feat: implement QA infrastructure and testing`
+- [x] Todos los checkboxes de tareas marcados como completados
+- [x] `npm run lint` ejecuta sin errores ni warnings críticos
+- [x] `npm run typecheck` ejecuta sin errores
+- [x] `npm test` ejecuta con todos los tests pasando
+- [x] `npm run build` genera build exitoso
+- [x] Cobertura de tests > 60%
+- [x] Code review completado y aprobado
+- [x] Documentación actualizada (README, guides)
+- [x] Todos los archivos listados creados/modificados
+- [x] Commit siguiendo conventional commits: `feat: implement QA infrastructure and testing`
 
 ## Notas Técnicas
 

@@ -27,14 +27,19 @@ model Tenant {
   auditLogs      AuditChain[]
 }
 
+// 🧑‍💼 Usuario Administrativo (Quien hace login)
 model StaffUser {
-  id        String   @id @default(uuid())
-  tenantId  String
-  email     String   @unique
-  role      String   @default("ADMIN") // OWNER, ADMIN, AUDITOR
-  createdAt DateTime @default(now())
+  id           String    @id @default(uuid())
+  tenantId     String
+  email        String    @unique
+  passwordHash String    // Hashed password (bcrypt)
+  name         String?   // Nombre del usuario
+  image        String?   // Url del avatar
+  role         String    @default("ADMIN") // OWNER, ADMIN, AUDITOR - Ojo: Enum en lugar de String es mejor pero string es flexible
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  tenant       Tenant    @relation(fields: [tenantId], references: [id])
 }
 
 // 👥 Capa de Identidad Digital
@@ -43,12 +48,15 @@ model DigitalIdentity {
   tenantId       String
   fullName       String
   idNumber       String
+  email          String?  // Contacto para ARCO/Notificaciones
+  phone          String?
   biometricToken String?  // Representación cifrada del perfil
   createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
 
   tenant         Tenant   @relation(fields: [tenantId], references: [id])
   consentEvents  ConsentEvent[]
-  contracts      SignatureContract[]
+  signatureContracts SignatureContract[]
   arcoRequests   ArcoRequest[]
 }
 
@@ -65,21 +73,33 @@ model ConsentEvent {
 
 // 🔐 Capa de Módulos Operativos
 model SignatureContract {
-  id         String   @id @default(uuid())
-  identityId String
-  fileUrl    String
-  status     String   @default("SIGNED")
-  createdAt  DateTime @default(now())
+  id            String    @id @default(uuid())
+  identityId    String
+  fileName      String
+  fileUrl       String
+  fileHash      String?
+  status        String    @default("PENDING")
+  expiresAt     DateTime?
+  signatureHash String?
+  signedAt      DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  identity   DigitalIdentity @relation(fields: [identityId], references: [id])
+  identity      DigitalIdentity @relation(fields: [identityId], references: [id])
 }
 
 model ArcoRequest {
   id         String   @id @default(uuid())
-  identityId String
-  type       String   // ACCESO, RECTIFICACION, etc.
-  status     String   @default("PENDING")
-  createdAt  DateTime @default(now())
+  identityId   String
+  type         String   // ACCESO, RECTIFICACION, etc.
+  description  String?  // Detalles de la solicitud
+  contactEmail    String?
+  contactPhone    String?
+  status          String    @default("PENDING")
+  resolution      String?   // Detalles de la resolución
+  rejectionReason String?   // Motivo de rechazo si aplica
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   identity   DigitalIdentity @relation(fields: [identityId], references: [id])
 }
@@ -89,6 +109,8 @@ model AuditChain {
   id           String   @id @default(uuid())
   tenantId     String
   eventType    String
+  payload      Json     // Datos del evento
+  metadata     Json?    // Metadatos (IP, UserAgent)
   payloadHash  String
   prevHash     String?
   combinedHash String

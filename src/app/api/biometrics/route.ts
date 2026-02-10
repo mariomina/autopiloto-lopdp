@@ -61,24 +61,31 @@ export async function POST(req: Request) {
             // Verificar coincidencia biométrica
             const verificationResult = verifyBiometric(biometricData, biometricToken);
 
+            // Hash Calculation
+            const payload = {
+                identityId,
+                verificationType,
+                success: verificationResult.match,
+                confidence: verificationResult.confidence,
+                deepfakeDetected: deepfakeAnalysis.isDeepfake,
+                deepfakeConfidence: deepfakeAnalysis.confidence,
+            };
+            const payloadHash = crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+
             // Crear evento de auditoría
             await prisma.auditChain.create({
                 data: {
                     tenantId: identity.tenantId,
                     eventType: 'BIOMETRIC_VERIFICATION',
                     timestamp: new Date(),
-                    payload: {
-                        identityId,
-                        verificationType,
-                        success: verificationResult.match,
-                        confidence: verificationResult.confidence,
-                        deepfakeDetected: deepfakeAnalysis.isDeepfake,
-                        deepfakeConfidence: deepfakeAnalysis.confidence,
-                    },
+                    payload,
                     metadata: {
                         userAgent: req.headers.get('user-agent') || 'unknown',
                         ipAddress: req.headers.get('x-forwarded-for') || 'unknown',
-                    }
+                    },
+                    payloadHash,
+                    combinedHash: payloadHash, // Simplified for this endpoint MVP
+                    prevHash: null,
                 }
             });
 

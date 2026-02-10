@@ -1,5 +1,7 @@
 # Story 1.1: Configuración Base y Entorno de Desarrollo
 
+**Estado:** ✅ COMPLETADO
+
 ## Descripción
 Inicializar el proyecto, configurar el entorno de ejecución, dependencias y estructura de carpetas siguiendo el framework AIOS-FullStack.
 
@@ -27,6 +29,8 @@ Requisitos iniciales para un proyecto Next.js 15+ con soporte para Tailwind 4 y 
 ---
 
 # Story 1.2: Infraestructura de Datos (Prisma & Supabase)
+
+**Estado:** ✅ COMPLETADO
 
 ## Descripción
 Establecer la conexión con el motor de base de datos y definir el esquema relacional que soporte multi-tenancy y cadena de integridad.

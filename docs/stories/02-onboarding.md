@@ -1,5 +1,7 @@
 # Story 2.1: Sistema de Navegación y Estado Global (SPA)
 
+**Estado:** ✅ COMPLETADO
+
 ## Descripción
 Implementar el motor de navegación interno basado en estados para permitir transiciones fluidas entre Landing, Auth y Dashboard.
 
@@ -26,6 +28,8 @@ Basado en `src/app/page.tsx` y el uso de `ViewState`.
 ---
 
 # Story 2.2: Onboarding Corporativo (Tenant Registry)
+
+**Estado:** ✅ COMPLETADO
 
 ## Descripción
 Habilitar el proceso de registro de nuevos clientes (Tenants) configurando legalmente sus módulos y branding.

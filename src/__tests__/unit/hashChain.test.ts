@@ -1,30 +1,32 @@
 import { describe, it, expect } from 'vitest';
-import { calculatePayloadHash, verifyChainIntegrity, AuditEvent } from '../../lib/crypto/hashChain';
+import { calculatePayloadHash, verifyChainIntegrity, AuditEvent, calculateCombinedHash } from '../../lib/crypto/hashChain';
 
 describe('Hash Chain Verification', () => {
-    const events: AuditEvent[] = [
-        {
-            id: 'event-1',
-            payload: { identityId: 'identity-1' },
-            payloadHash: calculatePayloadHash({ identityId: 'identity-1' }),
-            previousHash: null,
-            timestamp: new Date('2026-02-09T00:00:01Z'),
-        },
-        {
-            id: 'event-2',
-            payload: { identityId: 'identity-2' },
-            payloadHash: calculatePayloadHash({ identityId: 'identity-2' }),
-            previousHash: calculatePayloadHash({ identityId: 'identity-1' }), // Link to previous payload hash
-            timestamp: new Date('2026-02-09T00:00:02Z'),
-        },
-        {
-            id: 'event-3',
-            payload: { identityId: 'identity-3' },
-            payloadHash: calculatePayloadHash({ identityId: 'identity-3' }),
-            previousHash: calculatePayloadHash({ identityId: 'identity-2' }), // Link to previous payload hash
-            timestamp: new Date('2026-02-09T00:00:03Z'),
+    // Helper to create a proper event with combined hash
+    const createEvent = (id: string, payload: any, prevCombinedHash: string | null = null): AuditEvent => {
+        const payloadHash = calculatePayloadHash(payload);
+        const event: AuditEvent = {
+            id,
+            payload,
+            payloadHash,
+            prevHash: prevCombinedHash,
+            timestamp: new Date(),
+        };
+
+        if (prevCombinedHash) {
+            event.combinedHash = calculateCombinedHash(payloadHash, prevCombinedHash);
+        } else {
+            event.combinedHash = payloadHash; // Root event
         }
-    ];
+
+        return event;
+    };
+
+    const event1 = createEvent('event-1', { identityId: 'identity-1' });
+    const event2 = createEvent('event-2', { identityId: 'identity-2' }, event1.combinedHash);
+    const event3 = createEvent('event-3', { identityId: 'identity-3' }, event2.combinedHash);
+
+    const events: AuditEvent[] = [event1, event2, event3];
 
     it('should verify a valid chain of events', () => {
         const result = verifyChainIntegrity(events);
@@ -42,7 +44,9 @@ describe('Hash Chain Verification', () => {
 
         const result = verifyChainIntegrity(tamperedPayloadEvents);
         expect(result.isValid).toBe(false);
-        expect(result.brokenLinks).toBeGreaterThan(0);
+        // Payload mismatch doesn't necessarily break the link if links are based on combined hashes
+        // but it makes the event invalid.
+        expect(result.verifiedEvents).toBeLessThan(events.length);
         // Debe fallar porque el stored payloadHash no coincide con el calculated hash del payload actual
     });
 
@@ -51,7 +55,7 @@ describe('Hash Chain Verification', () => {
         // Modificar evento 2 para romper el enlace con el 1
         tamperedLinkEvents[1] = {
             ...events[1],
-            previousHash: 'INVALID-HASH', // Previous hash no coincide con el payload hash del evento 1
+            prevHash: 'INVALID-HASH', // Previous hash no coincide con el payload hash del evento 1
         };
 
         const result = verifyChainIntegrity(tamperedLinkEvents);

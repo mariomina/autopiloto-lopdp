@@ -175,23 +175,30 @@ export async function POST(req: Request) {
                 }
             });
 
+            // Crear hash del payload
+            const payload = {
+                contractId: contract.id,
+                identityId: data.identityId,
+                fileName: data.fileName,
+                fileHash,
+                action: 'CONTRACT_CREATED'
+            };
+            const payloadHash = crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+
             // Crear evento de auditoría
             await prisma.auditChain.create({
                 data: {
                     tenantId: identity.tenantId,
                     eventType: 'SIGNATURE_COMPLETED',
                     timestamp: new Date(),
-                    payload: {
-                        contractId: contract.id,
-                        identityId: data.identityId,
-                        fileName: data.fileName,
-                        fileHash,
-                        action: 'CONTRACT_CREATED'
-                    },
+                    payload,
                     metadata: {
                         userAgent: req.headers.get('user-agent') || 'unknown',
                         ipAddress: req.headers.get('x-forwarded-for') || 'unknown',
-                    }
+                    },
+                    payloadHash,
+                    combinedHash: payloadHash,
+                    prevHash: null,
                 }
             });
 
@@ -291,7 +298,7 @@ export async function PATCH(req: Request) {
             }
 
             // Generar hash de la firma
-            const signatureHash = generateSignatureHash(signatureData, contract.fileHash);
+            const signatureHash = generateSignatureHash(signatureData, contract.fileHash || '');
 
             // Actualizar contrato
             const updatedContract = await prisma.signatureContract.update({
@@ -312,25 +319,32 @@ export async function PATCH(req: Request) {
                 }
             });
 
+            // Calcular hash del payload
+            const payload = {
+                contractId: updatedContract.id,
+                identityId: updatedContract.identityId,
+                fileName: updatedContract.fileName,
+                fileHash: updatedContract.fileHash,
+                signatureHash,
+                action: 'CONTRACT_SIGNED'
+            };
+            const payloadHash = crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+
             // Crear evento de auditoría
             await prisma.auditChain.create({
                 data: {
                     tenantId: contract.identity.tenantId,
                     eventType: 'SIGNATURE_COMPLETED',
                     timestamp: new Date(),
-                    payload: {
-                        contractId: updatedContract.id,
-                        identityId: updatedContract.identityId,
-                        fileName: updatedContract.fileName,
-                        fileHash: updatedContract.fileHash,
-                        signatureHash,
-                        action: 'CONTRACT_SIGNED'
-                    },
+                    payload,
                     metadata: {
                         userAgent: req.headers.get('user-agent') || 'unknown',
                         ipAddress: req.headers.get('x-forwarded-for') || 'unknown',
                         biometricVerified: !!biometricToken
-                    }
+                    },
+                    payloadHash,
+                    combinedHash: payloadHash,
+                    prevHash: null,
                 }
             });
 

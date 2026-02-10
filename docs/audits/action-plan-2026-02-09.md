@@ -153,15 +153,15 @@ verifyChainIntegrity(auditEvents) // ✅ true si cadena válida
 **Story:** Story 3.3 - ARCO Request Management
 
 #### Tareas
-- [ ] Crear `src/app/api/arco/route.ts`
+- [x] Crear `src/app/api/arco/route.ts`
   - `GET /api/arco` - Listar solicitudes
   - `POST /api/arco` - Crear solicitud
   - `PATCH /api/arco/[id]` - Actualizar estado
-- [ ] Implementar lógica de alertas de vencimiento (15 días LOPDP)
-- [ ] Actualizar `ArcoView.tsx` con funcionalidad real
-- [ ] Agregar notificaciones de deadline
-- [ ] Tests de integración
-- [ ] Commit: `feat: implement ARCO request management system`
+- [x] Implementar lógica de alertas de vencimiento (15 días LOPDP)
+- [x] Actualizar `ArcoView.tsx` con funcionalidad real
+- [x] Agregar notificaciones de deadline
+- [x] Tests de integración
+- [x] Commit: `feat: implement ARCO request management system`
 
 **Criterios de Éxito:**
 ```typescript
@@ -175,14 +175,14 @@ verifyChainIntegrity(auditEvents) // ✅ true si cadena válida
 **Story:** Story 5.2 - Authentication Layer
 
 #### Tareas
-- [ ] Instalar NextAuth: `npm install next-auth`
-- [ ] Crear `src/app/api/auth/[...nextauth]/route.ts`
-- [ ] Configurar provider de credenciales
-- [ ] Implementar middleware de protección de rutas
-- [ ] Agregar validación de tenant en sesión
-- [ ] Actualizar `LoginView.tsx` con NextAuth
-- [ ] Tests de autenticación
-- [ ] Commit: `feat: implement NextAuth authentication system`
+- [x] Instalar NextAuth: `npm install next-auth`
+- [x] Crear `src/app/api/auth/[...nextauth]/route.ts`
+- [x] Configurar provider de credenciales
+- [x] Implementar middleware de protección de rutas
+- [x] Agregar validación de tenant en sesión
+- [x] Actualizar `LoginView.tsx` con NextAuth
+- [x] Tests de autenticación
+- [x] Commit: `feat: implement NextAuth authentication system`
 
 **Criterios de Éxito:**
 ```bash
@@ -364,7 +364,7 @@ Si una tarea requiere más tiempo:
 
 ### Semana 3
 - [x] Día 11-12: ARCO Module (Adelantado)
-- [ ] Día 13-14: Authentication
+- [x] Día 13-14: Authentication
 - [ ] Día 15: Optimization
 - [ ] Día 16-17: Final Verification
 

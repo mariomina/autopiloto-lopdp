@@ -14,6 +14,12 @@ vi.mock('@/components/shared', () => ({
     SettingsView: () => <div data-testid="settings-view">Settings View</div>
 }))
 
+// Mock lib/actions to avoid next-auth imports in test environment
+vi.mock('@/lib/actions', () => ({
+    logOut: vi.fn(),
+    authenticate: vi.fn(),
+}))
+
 describe('Layout Component', () => {
     const mockSetView = vi.fn()
     const mockToggleTheme = vi.fn()
@@ -89,14 +95,15 @@ describe('Layout Component', () => {
         expect(screen.getByText('Cerrar Sesión')).toBeInTheDocument()
     })
 
-    it('should call setView with LANDING when logout is clicked', async () => {
+    it('should call logOut action when logout is clicked', async () => {
+        const { logOut } = await import('@/lib/actions')
         const user = userEvent.setup()
         render(<Layout {...defaultProps} />)
 
         const logoutButton = screen.getByText('Cerrar Sesión')
         await user.click(logoutButton)
 
-        expect(mockSetView).toHaveBeenCalledWith(ViewState.LANDING)
+        expect(logOut).toHaveBeenCalled()
     })
 
     it('should show Sun icon when dark mode is active', () => {

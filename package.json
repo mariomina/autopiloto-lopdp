@@ -13,22 +13,30 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
     "@prisma/client": "5.21.0",
     "@supabase/supabase-js": "^2.93.1",
+    "bcryptjs": "^3.0.3",
     "lucide-react": "^0.563.0",
     "next": "16.1.4",
+    "next-auth": "^5.0.0-beta.25",
     "prisma": "5.21.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-is": "^19.2.4",
     "recharts": "^3.7.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.1.6",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

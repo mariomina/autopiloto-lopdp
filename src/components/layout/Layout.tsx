@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ViewState } from '@/types';
 import { SettingsView } from '@/components/shared';
 import { HelpGuide } from './HelpGuide';
+import { logOut } from '@/lib/actions';
 import { NavItem } from './NavItem';
 import {
   LayoutDashboard,
@@ -75,7 +76,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, setView, 
         </nav>
 
         <div className="p-4 border-t border-slate-200 dark:border-white/10">
-          <button onClick={() => setView(ViewState.LANDING)} className="flex items-center gap-3 px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg w-full transition-colors">
+          <button onClick={() => logOut()} className="flex items-center gap-3 px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg w-full transition-colors">
             <LogOut size={18} />
             <span>Cerrar Sesión</span>
           </button>

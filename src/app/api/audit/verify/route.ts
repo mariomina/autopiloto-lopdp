@@ -36,7 +36,8 @@ export async function GET(req: Request) {
                 id: true,
                 payload: true,
                 payloadHash: true,
-                previousHash: true,
+                prevHash: true,
+                combinedHash: true, // Importante para verificación
                 timestamp: true
             }
         });

@@ -54,6 +54,9 @@ export const RegisterTenantSchema = z.object({
     biometricsOn: z.boolean().optional().default(false),
     signatureOn: z.boolean().optional().default(false),
     arcoOn: z.boolean().optional().default(false),
+    password: z.string()
+        .min(8, 'Contraseña debe tener al menos 8 caracteres')
+        .max(100, 'Contraseña no puede exceder 100 caracteres'),
 })
 
 export type RegisterTenantInput = z.infer<typeof RegisterTenantSchema>
@@ -219,12 +222,12 @@ export const AuditEventTypeSchema = z.enum([
 export const CreateAuditEventSchema = z.object({
     tenantId: z.string().uuid('ID de tenant inválido'),
     eventType: AuditEventTypeSchema,
-    payload: z.record(z.any())
+    payload: z.record(z.string(), z.any())
         .refine(
             (val) => Object.keys(val).length > 0,
             'Payload no puede estar vacío'
         ),
-    metadata: z.record(z.string()).optional(),
+    metadata: z.record(z.string(), z.any()).optional(),
 })
 
 export type CreateAuditEventInput = z.infer<typeof CreateAuditEventSchema>

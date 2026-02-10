@@ -74,6 +74,7 @@ describe('Validation Schemas', () => {
             email: 'admin@empresa.com',
             portalName: 'Portal Empresa',
             primaryColor: '#1152d4',
+            password: 'password123',
         }
 
         it('should accept valid tenant registration data', () => {

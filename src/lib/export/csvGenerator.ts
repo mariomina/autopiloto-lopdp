@@ -24,7 +24,7 @@ export function generateAuditCsv(events: AuditEvent[]): string {
         const timestampStr = isNaN(timestampObj.getTime()) ? 'INVALID DATE' : timestampObj.toISOString();
 
         const payloadHash = event.payloadHash;
-        const prevHash = event.previousHash || '';
+        const prevHash = event.prevHash || '';
 
         return `"${id}","${type}","${timestampStr}","${payloadHash}","${prevHash}","${isVerified ? 'Yes' : 'No'}"`;
     });

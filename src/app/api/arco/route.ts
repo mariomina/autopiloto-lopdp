@@ -176,21 +176,27 @@ export async function POST(req: Request) {
                 }
             });
 
+            // Calcular hash del payload
+            const payload = {
+                arcoRequestId: arcoRequest.id,
+                type: arcoRequest.type,
+                identityId: arcoRequest.identityId,
+            };
+            const payloadHash = require('crypto').createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+
             // Crear evento de auditoría
             await prisma.auditChain.create({
                 data: {
                     tenantId: arcoRequest.identity.tenantId,
                     eventType: 'ARCO_REQUEST_CREATED',
                     timestamp: new Date(),
-                    payload: {
-                        arcoRequestId: arcoRequest.id,
-                        type: arcoRequest.type,
-                        identityId: arcoRequest.identityId,
-                    },
+                    payload,
                     metadata: {
                         userAgent: req.headers.get('user-agent') || 'unknown',
                         ipAddress: req.headers.get('x-forwarded-for') || 'unknown',
-                    }
+                    },
+                    payloadHash,
+                    combinedHash: payloadHash, // Simplificación para MVP (en prod usar prevHash)
                 }
             });
 
@@ -278,20 +284,27 @@ export async function PATCH(req: Request) {
                 }
             });
 
+            // Calcular hash del payload
+            const payload = {
+                arcoRequestId: arcoRequest.id,
+                newStatus: data.status,
+                resolution: data.resolution,
+            };
+            const payloadHash = require('crypto').createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+
             // Crear evento de auditoría
             await prisma.auditChain.create({
                 data: {
                     tenantId: arcoRequest.identity.tenantId,
                     eventType: 'ARCO_REQUEST_RESOLVED',
                     timestamp: new Date(),
-                    payload: {
-                        arcoRequestId: arcoRequest.id,
-                        newStatus: data.status,
-                        resolution: data.resolution,
-                    },
+                    payload,
                     metadata: {
                         userAgent: req.headers.get('user-agent') || 'unknown',
-                    }
+                        ipAddress: req.headers.get('x-forwarded-for') || 'unknown',
+                    },
+                    payloadHash,
+                    combinedHash: payloadHash,
                 }
             });
 

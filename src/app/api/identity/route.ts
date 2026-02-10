@@ -203,21 +203,28 @@ export async function POST(req: Request) {
                 }
             });
 
+            // Calcular hash del payload
+            const payload = {
+                identityId: identity.id,
+                fullName: identity.fullName,
+                idNumber: identity.idNumber,
+            };
+            const payloadHash = require('crypto').createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+
             // Crear evento de auditoría
             await prisma.auditChain.create({
                 data: {
                     tenantId: data.tenantId,
                     eventType: 'IDENTITY_CREATED',
                     timestamp: new Date(),
-                    payload: {
-                        identityId: identity.id,
-                        fullName: identity.fullName,
-                        idNumber: identity.idNumber,
-                    },
+                    payload,
                     metadata: {
                         userAgent: req.headers.get('user-agent') || 'unknown',
                         ipAddress: req.headers.get('x-forwarded-for') || 'unknown',
-                    }
+                    },
+                    payloadHash,
+                    combinedHash: payloadHash,
+                    prevHash: null,
                 }
             });
 

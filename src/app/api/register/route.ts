@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { RegisterTenantSchema, validateSchema } from '@/lib/validations/schemas';
+import bcrypt from 'bcryptjs';
 
 /**
  * API DE REGISTRO CON VALIDACIÓN ZOD
@@ -29,6 +30,7 @@ export async function POST(req: Request) {
             razonSocial: body.legal?.companyName || body.razonSocial,
             sector: body.legal?.sector || body.sector || 'Other',
             email: body.legal?.adminEmail || body.email,
+            password: body.legal?.password || body.password || 'password123', // Default for now if missing in legacy
             portalName: body.branding?.portalName || body.portalName || `${body.legal?.companyName || 'Portal'} LOPDP`,
             primaryColor: body.branding?.primaryColor || body.primaryColor,
             logoUrl: body.branding?.logoUrl || body.logoUrl,
@@ -53,6 +55,9 @@ export async function POST(req: Request) {
         const validatedData = validation.data;
 
         try {
+            // Hash password
+            const passwordHash = await bcrypt.hash(validatedData.password, 10);
+
             // Check for existing tenant
             const existingTenant = await prisma.tenant.findUnique({
                 where: { ruc: validatedData.ruc },
@@ -85,6 +90,7 @@ export async function POST(req: Request) {
                     data: {
                         tenantId: tenant.id,
                         email: validatedData.email,
+                        passwordHash: passwordHash,
                         role: 'OWNER',
                     },
                 });

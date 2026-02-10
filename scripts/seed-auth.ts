@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcryptjs'
 
+import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-    console.log('🌱 Start seeding...')
     const ruc = "1792948573001"
     let tenant = await prisma.tenant.findUnique({ where: { ruc } })
 
@@ -22,14 +20,12 @@ async function main() {
     }
 
     const email = "admin@lopdp.ec"
-    const password = "admin123"
-    const passwordHash = await bcrypt.hash(password, 10)
+    // Hash for "admin123"
+    const passwordHash = "$2a$10$EpRnTzVlqHNP0.fkbpo9e.3qauG.RNPBBn7kk8eve1Fzf1I.h5436"
 
-    await prisma.staffUser.upsert({
+    const admin = await prisma.staffUser.upsert({
         where: { email },
-        update: {
-            passwordHash: passwordHash
-        },
+        update: {},
         create: {
             tenantId: tenant.id,
             email,
@@ -38,15 +34,9 @@ async function main() {
             role: "ADMIN"
         }
     })
-    console.log(`✅ Admin created/updated: ${email} / ${password}`)
-    console.log('🚀 Seeding finished.')
+    console.log("Admin created: admin@lopdp.ec / admin123")
 }
 
 main()
-    .catch((e) => {
-        console.error(e)
-        process.exit(1)
-    })
-    .finally(async () => {
-        await prisma.$disconnect()
-    })
+    .catch(console.error)
+    .finally(() => prisma.$disconnect())

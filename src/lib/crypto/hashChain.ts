@@ -4,7 +4,8 @@ export interface AuditEvent {
     id: string;
     payload: any;
     payloadHash: string;
-    previousHash: string | null;
+    prevHash: string | null; // Renamed from previousHash
+    combinedHash?: string;   // New field for stronger integrity
     timestamp: Date | string;
     eventType?: string;
     tenantId?: string;
@@ -30,10 +31,15 @@ export function calculatePayloadHash(payload: any): string {
 }
 
 /**
+ * Recalcula el Combined Hash esperado
+ */
+export function calculateCombinedHash(payloadHash: string, prevHash: string): string {
+    const combinedString = `${payloadHash}|${prevHash}`;
+    return `SHA256:${crypto.createHash('sha256').update(combinedString).digest('hex')}`;
+}
+
+/**
  * Verifica la integridad de una lista de eventos de auditoría.
- * Comprueba:
- * 1. Que el hash del payload sea correcto (integridad de datos).
- * 2. Que el previousHash coincida con el payloadHash del evento anterior (integridad de cadena).
  */
 export function verifyChainIntegrity(events: AuditEvent[]): VerificationResult {
     if (!events || events.length === 0) {
@@ -46,7 +52,7 @@ export function verifyChainIntegrity(events: AuditEvent[]): VerificationResult {
         };
     }
 
-    // Ordenar cronológicamente (antiguo a nuevo) para verificar la cadena
+    // Ordenar cronológicamente (antiguo a nuevo)
     const sortedEvents = [...events].sort((a, b) =>
         new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );
@@ -60,21 +66,41 @@ export function verifyChainIntegrity(events: AuditEvent[]): VerificationResult {
         let isEventValid = true;
 
         // 1. Verificar Hash del Payload (Integridad de contenido)
-        const calculatedHash = calculatePayloadHash(currentEvent.payload);
-        if (calculatedHash !== currentEvent.payloadHash) {
-            errors.push(`Event ${currentEvent.id}: Payload hash mismatch. Stored: ${currentEvent.payloadHash}, Calculated: ${calculatedHash}`);
+        const calculatedPayloadHash = calculatePayloadHash(currentEvent.payload);
+        if (calculatedPayloadHash !== currentEvent.payloadHash) {
+            errors.push(`Event ${currentEvent.id}: Payload hash mismatch. Stored: ${currentEvent.payloadHash}, Calculated: ${calculatedPayloadHash}`);
             isEventValid = false;
-            brokenLinks++;
         }
 
-        // 2. Verificar Enlace con Anterior (Integridad de cadena)
-        // Solo si no es el primer evento de la lista (o de la historia)
+        // 2. Verificar Hash Combinado (si existe)
+        if (currentEvent.combinedHash && currentEvent.prevHash) {
+            const expectedCombined = calculateCombinedHash(currentEvent.payloadHash, currentEvent.prevHash);
+            if (expectedCombined !== currentEvent.combinedHash) {
+                errors.push(`Event ${currentEvent.id}: Combined hash mismatch. Integrity compromised.`);
+                isEventValid = false;
+            }
+        }
+
+        // 3. Verificar Enlace con Anterior (Integridad de cadena)
         if (i > 0) {
             const previousEvent = sortedEvents[i - 1];
-            if (currentEvent.previousHash !== previousEvent.payloadHash) {
-                errors.push(`Event ${currentEvent.id}: Chain broken. PreviousHash (${currentEvent.previousHash}) does not match previous event PayloadHash (${previousEvent.payloadHash})`);
-                isEventValid = false;
-                brokenLinks++;
+
+            // Si usamos combinedHash strategy
+            if (currentEvent.combinedHash && previousEvent.combinedHash) {
+                if (currentEvent.prevHash !== previousEvent.combinedHash) {
+                    errors.push(`Event ${currentEvent.id}: Broken link. PrevHash points to ${currentEvent.prevHash}, but previous event CombinedHash is ${previousEvent.combinedHash}`);
+                    isEventValid = false;
+                    brokenLinks++;
+                }
+            }
+            // Fallback a legacy strategy (prevHash -> payloadHash)
+            else if (currentEvent.prevHash !== previousEvent.payloadHash) {
+                // Solo marcamos error si TAMPOCO coincide con combinedHash (por si acaso mezclamos)
+                if (!previousEvent.combinedHash || currentEvent.prevHash !== previousEvent.combinedHash) {
+                    errors.push(`Event ${currentEvent.id}: Chain broken. PrevHash mismatch.`);
+                    isEventValid = false;
+                    brokenLinks++;
+                }
             }
         }
 
@@ -84,7 +110,7 @@ export function verifyChainIntegrity(events: AuditEvent[]): VerificationResult {
     }
 
     return {
-        isValid: brokenLinks === 0,
+        isValid: errors.length === 0,
         totalEvents: events.length,
         verifiedEvents,
         brokenLinks,
